@@ -6,7 +6,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     <View style={styles.card}>
       <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
       <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>{product.price}</Text>
+      <Text style={styles.productPrice}>${product.price}</Text>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => onAddToCart(product)}

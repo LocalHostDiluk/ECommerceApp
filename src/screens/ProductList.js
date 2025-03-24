@@ -16,69 +16,69 @@ import Toast from "react-native-toast-message";
 const productos = [
   {
     id: 1,
-    price: "$1200",
+    price: 1200,
     name: "Noches de Salón Vinil",
     imageUrl: "https://i.ytimg.com/vi/fyXIezpxFi0/maxresdefault.jpg",
   },
   {
     id: 2,
-    price: "$250",
+    price: 250,
     name: "Daltónico",
     imageUrl:
       "https://cdn-images.dzcdn.net/images/cover/f945f5f0a55d01a16fbe8f23c1171297/0x1900-000000-80-0-0.jpg",
   },
   {
     id: 3,
-    price: "$250",
+    price: 250,
     name: "Próximos prójimos",
     imageUrl:
       "https://i.scdn.co/image/ab67616d0000b2731e60fc6159664ae2072239fe",
   },
   {
     id: 4,
-    price: "$200",
+    price: 200,
     name: "Imperfecto extraño",
     imageUrl:
       "https://i.scdn.co/image/ab67616d0000b27308b5853acded25e1b5ff5115",
   },
   {
     id: 5,
-    price: "$140",
+    price: 140,
     name: "Proaño",
     imageUrl:
       "https://i.scdn.co/image/ab67616d0000b27326da2f3b75f84c4c1d10730a",
   },
   {
     id: 6,
-    price: "$180",
+    price: 180,
     name: "Enjambre y los huéspedes del orbe",
     imageUrl:
       "https://i.scdn.co/image/ab67616d0000b27369d1fb33044a581470cb7758",
   },
   {
     id: 7,
-    price: "$175",
+    price: 175,
     name: "El segundo es felino",
     imageUrl:
       "https://i.scdn.co/image/ab67616d00001e0266f128e383614b0aa4df5ebd",
   },
   {
     id: 8,
-    price: "$350",
+    price: 350,
     name: "Playera - Daltónico",
     imageUrl:
       "https://www.enjambremusica.com/cdn/shop/products/daltonico.png?v=1659567898&width=493",
   },
   {
     id: 9,
-    price: "$300",
+    price: 300,
     name: "Tote bag Daltónico",
     imageUrl:
       "https://www.enjambremusica.com/cdn/shop/files/totedaltonico.png?v=1727141441&width=493",
   },
   {
     id: 10,
-    price: "$350",
+    price: 350,
     name: "Playera - No me mires con esos ojos",
     imageUrl:
       "https://www.enjambremusica.com/cdn/shop/files/38.png?v=1741800661&width=493",
@@ -153,7 +153,7 @@ const ProductList = () => {
                 style={styles.productImage}
               />
               <Text style={styles.productName}>{selectedProduct.name}</Text>
-              <Text style={styles.productPrice}>{selectedProduct.price}</Text>
+              <Text style={styles.productPrice}> ${selectedProduct.price}</Text>
               <Text style={styles.productDescripcion}>
                 Texto de ejemplo para mostrar detalles
               </Text>
