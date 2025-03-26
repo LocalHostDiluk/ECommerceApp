@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import Toast from "react-native-toast-message";
 
-const productos = [
+export const productos = [
   {
     id: 1,
     price: 1200,

@@ -4,13 +4,13 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Button,
   Image,
 } from "react-native";
 import React, { useState } from "react";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
+import { productos } from "./ProductList";
 
 const Cart = () => {
   const navigation = useNavigation();
@@ -29,44 +29,22 @@ const Cart = () => {
     });
   }, [navigation]);
 
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      price: 1200,
-      name: "Noches de Salón Vinil",
-      imageUrl: "https://i.ytimg.com/vi/fyXIezpxFi0/maxresdefault.jpg",
-    },
-    {
-      id: 2,
-      price: 250,
-      name: "Daltónico",
-      imageUrl:
-        "https://cdn-images.dzcdn.net/images/cover/f945f5f0a55d01a16fbe8f23c1171297/0x1900-000000-80-0-0.jpg",
-    },
-    {
-      id: 3,
-      price: 250,
-      name: "Próximos prójimos",
-      imageUrl:
-        "https://i.scdn.co/image/ab67616d0000b2731e60fc6159664ae2072239fe",
-    },
-  ]);
+  const [cart, setCart] = useState([...productos]);
 
   const handleRemove = (id) => {
-    const updateCart = cart.filter((item) => item.id !== id);
-    setCart(updateCart);
+    const itemToRemove = cart.find((item) => item.id === id);
+    const updatedCart = cart.filter((item) => item.id !== id);
+    setCart(updatedCart);
     Toast.show({
       type: "error",
-      text1: "Producto eliminado del carrito",
-      text2: "Se ha eliminado del carrito",
+      text1: `${itemToRemove?.name} elimanado del carrito`,
       visibilityTime: 2000,
       position: "bottom",
     });
   };
 
-  const Total = () => {
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    return total.toFixed(2);
+  const getTotal = () => {
+    return cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
   };
 
   const renderCart = ({ item }) => (
@@ -85,11 +63,11 @@ const Cart = () => {
     </View>
   );
 
-  const alert = () => {
+  const alertPurchase = () => {
     Toast.show({
       type: "info",
       text1: "Compra realizada",
-      text2: `Procediendo a la compra`,
+      text2: "Procediendo a la compra",
       visibilityTime: 2000,
       position: "bottom",
     });
@@ -112,8 +90,11 @@ const Cart = () => {
 
       {cart.length > 0 && (
         <View style={styles.footer}>
-          <Text style={styles.totalText}>Total: ${Total()}</Text>
-          <TouchableOpacity style={styles.checkoutButton} onPress={alert}>
+          <Text style={styles.totalText}>Total: ${getTotal()}</Text>
+          <TouchableOpacity
+            style={styles.checkoutButton}
+            onPress={alertPurchase}
+          >
             <Text style={styles.checkoutButtonText}>Proceder a la compra</Text>
           </TouchableOpacity>
         </View>
