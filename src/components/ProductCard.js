@@ -4,9 +4,10 @@ import React from "react";
 const ProductCard = ({ product, onAddToCart }) => {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
-      <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>${product.price}</Text>
+      <Image source={{ uri: product.imagen }} style={styles.productImage} />
+      <Text style={styles.productName}>{product.nombre}</Text>
+      <Text style={styles.productPrice}>${product.precio}</Text>
+
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => onAddToCart(product)}

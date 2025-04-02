@@ -6,84 +6,14 @@ import {
   Modal,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import Toast from "react-native-toast-message";
-
-export const productos = [
-  {
-    id: 1,
-    price: 1200,
-    name: "Noches de Salón Vinil",
-    imageUrl: "https://i.ytimg.com/vi/fyXIezpxFi0/maxresdefault.jpg",
-  },
-  {
-    id: 2,
-    price: 250,
-    name: "Daltónico",
-    imageUrl:
-      "https://cdn-images.dzcdn.net/images/cover/f945f5f0a55d01a16fbe8f23c1171297/0x1900-000000-80-0-0.jpg",
-  },
-  {
-    id: 3,
-    price: 250,
-    name: "Próximos prójimos",
-    imageUrl:
-      "https://i.scdn.co/image/ab67616d0000b2731e60fc6159664ae2072239fe",
-  },
-  {
-    id: 4,
-    price: 200,
-    name: "Imperfecto extraño",
-    imageUrl:
-      "https://i.scdn.co/image/ab67616d0000b27308b5853acded25e1b5ff5115",
-  },
-  {
-    id: 5,
-    price: 140,
-    name: "Proaño",
-    imageUrl:
-      "https://i.scdn.co/image/ab67616d0000b27326da2f3b75f84c4c1d10730a",
-  },
-  {
-    id: 6,
-    price: 180,
-    name: "Enjambre y los huéspedes del orbe",
-    imageUrl:
-      "https://i.scdn.co/image/ab67616d0000b27369d1fb33044a581470cb7758",
-  },
-  {
-    id: 7,
-    price: 175,
-    name: "El segundo es felino",
-    imageUrl:
-      "https://i.scdn.co/image/ab67616d00001e0266f128e383614b0aa4df5ebd",
-  },
-  {
-    id: 8,
-    price: 350,
-    name: "Playera - Daltónico",
-    imageUrl:
-      "https://www.enjambremusica.com/cdn/shop/products/daltonico.png?v=1659567898&width=493",
-  },
-  {
-    id: 9,
-    price: 300,
-    name: "Tote bag Daltónico",
-    imageUrl:
-      "https://www.enjambremusica.com/cdn/shop/files/totedaltonico.png?v=1727141441&width=493",
-  },
-  {
-    id: 10,
-    price: 350,
-    name: "Playera - No me mires con esos ojos",
-    imageUrl:
-      "https://www.enjambremusica.com/cdn/shop/files/38.png?v=1741800661&width=493",
-  },
-];
+import { getProducts } from "../api/products";
 
 const ProductList = () => {
   const navigation = useNavigation();
@@ -105,6 +35,30 @@ const ProductList = () => {
   const [cart, setCart] = useState([]);
   const [modalVisible, setModal] = useState(false);
   const [selectedProduct, setProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      setRefreshing(true);
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error al cargar productos",
+        text2: "No se pudieron obtener los productos",
+      });
+    } finally {
+      setRefreshing(false);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const anadirCarro = (producto) => {
     setCart([...cart, producto]);
@@ -131,14 +85,19 @@ const ProductList = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Productos Disponibles</Text>
-      <FlatList
-        data={productos}
-        renderItem={renderProductoItem}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
-      />
-
+      {loading ? (
+        <ActivityIndicator size="large" color="#ff6600" />
+      ) : (
+        <FlatList
+          data={products}
+          renderItem={renderProductoItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+          refreshing={refreshing}
+          onRefresh={fetchProducts}
+        />
+      )}
       {selectedProduct && (
         <Modal
           animationType="slide"
@@ -149,15 +108,23 @@ const ProductList = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Image
-                source={{ uri: selectedProduct.imageUrl }}
+                source={{ uri: selectedProduct.imagen }}
                 style={styles.productImage}
               />
-              <Text style={styles.productName}>{selectedProduct.name}</Text>
-              <Text style={styles.productPrice}> ${selectedProduct.price}</Text>
-              <Text style={styles.productDescripcion}>
-                Texto de ejemplo para mostrar detalles
+              <Text style={styles.productName}>{selectedProduct.nombre}</Text>
+              <Text style={styles.productPrice}>
+                {" "}
+                ${selectedProduct.precio}{" "}
               </Text>
-
+              <Text style={styles.descripcion}>
+                {selectedProduct.descripcion}
+              </Text>
+              <Text style={styles.productPrice}>
+                Stock: {selectedProduct.stock}
+              </Text>
+              <Text style={styles.descripcion}>
+                Categoria: {selectedProduct.categoria}
+              </Text>
               <TouchableOpacity
                 style={styles.addToCartButton}
                 onPress={() => {
@@ -169,7 +136,6 @@ const ProductList = () => {
                   Agregar al carrito
                 </Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setModal(false)}
@@ -229,14 +195,11 @@ const styles = StyleSheet.create({
     color: "#ff6600",
     marginBottom: 10,
   },
-  productDescripcion: {
-    color: "#bbb",
-    fontSize: 14,
-    textAlign: "center",
+  descripcion: {
+    fontSize: 16,
+    color: "#fff",
     marginBottom: 10,
   },
-
-  // **Estilos agregados para los botones**
   addToCartButton: {
     backgroundColor: "#ff6600",
     paddingVertical: 12,
