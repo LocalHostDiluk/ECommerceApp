@@ -9,16 +9,3 @@ export const getUsers = async () => {
     throw error;
   }
 };
-
-export const loginUser = async (username, password,phone) => {
-    try {
-      const response = await axiosInstance.post("/app/esb/user/login", {
-        username,
-        password,
-        phone
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || "Error en la solicitud";
-    }
-  };
