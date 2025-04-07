@@ -108,7 +108,7 @@ const Home = () => {
         contentContainerStyle={styles.albumListContainer}
       />
 
-      <Text style={styles.sectionTitle}>Galería de imágenes</Text>
+      <Text style={styles.sectionTitle}>Algunos de nuestros productos</Text>
       <View style={styles.carouselContainer}>
         <TouchableOpacity onPress={goPrevImage} style={styles.carouselButton}>
           <Text style={styles.carouselButtonText}>{"◀"}</Text>

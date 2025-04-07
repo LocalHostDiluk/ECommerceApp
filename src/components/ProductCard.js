@@ -4,13 +4,18 @@ import React from "react";
 const ProductCard = ({ product, onAddToCart }) => {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: product.imagen }} style={styles.productImage} />
+      <Image
+        source={{ uri: product.imagen || "https://via.placeholder.com/120" }}
+        style={styles.productImage}
+      />
       <Text style={styles.productName}>{product.nombre}</Text>
-      <Text style={styles.productPrice}>${product.precio}</Text>
+      <Text style={styles.productPrice}>
+        ${Number(product.precio).toFixed(2)}
+      </Text>
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => onAddToCart(product)}
+        onPress={() => onAddToCart && onAddToCart(product)}
       >
         <Text style={styles.addButtonText}>Agregar al carrito</Text>
       </TouchableOpacity>

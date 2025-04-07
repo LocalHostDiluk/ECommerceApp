@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
-import { productos } from "./ProductList";
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 
 const Cart = () => {
   const navigation = useNavigation();
@@ -29,30 +30,34 @@ const Cart = () => {
     });
   }, [navigation]);
 
-  const [cart, setCart] = useState([...productos]);
+  const { cart, removeFromCart } = useContext(CartContext);
 
   const handleRemove = (id) => {
     const itemToRemove = cart.find((item) => item.id === id);
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
+
+    removeFromCart(id);
+
     Toast.show({
       type: "error",
-      text1: `${itemToRemove?.name} elimanado del carrito`,
+      text1: `${itemToRemove?.nombre} eliminado del carrito`,
       visibilityTime: 2000,
       position: "bottom",
     });
   };
 
   const getTotal = () => {
-    return cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+    return cart.reduce((sum, item) => sum + Number(item.precio), 0).toFixed(2);
   };
 
   const renderCart = ({ item }) => (
     <View style={styles.cartItem}>
-      <Image source={{ uri: item.imageUrl }} style={styles.productImage} />
+      <Image source={{ uri: item.imagen }} style={styles.productImage} />
       <View style={styles.productInfo}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>${item.price}</Text>
+        <Text style={styles.productName}>{item.nombre}</Text>
+        <Text style={styles.productPrice}>
+          ${Number(item.precio).toFixed(2)}
+        </Text>
+        <Text style={styles.productQuantity}>Cantidad: {item.cantidad}</Text>
       </View>
       <TouchableOpacity
         onPress={() => handleRemove(item.id)}
@@ -124,6 +129,11 @@ const styles = StyleSheet.create({
   },
   cartList: {
     paddingBottom: 20,
+  },
+  productQuantity: {
+    color: "#bbb",
+    fontSize: 14,
+    marginTop: 5,
   },
   cartItem: {
     flexDirection: "row",

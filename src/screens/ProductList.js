@@ -14,6 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import Toast from "react-native-toast-message";
 import { getProducts } from "../api/products";
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 
 const ProductList = () => {
   const navigation = useNavigation();
@@ -32,7 +34,6 @@ const ProductList = () => {
     });
   }, [navigation]);
 
-  const [cart, setCart] = useState([]);
   const [modalVisible, setModal] = useState(false);
   const [selectedProduct, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -60,14 +61,14 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
+  const { addToCart } = useContext(CartContext);
+
   const anadirCarro = (producto) => {
-    setCart([...cart, producto]);
+
+    addToCart(producto);
     Toast.show({
       type: "success",
-      text1: "Producto añadido al carrito",
-      text2: `${producto.name} se ha añadido al carrito`,
-      visibilityTime: 2000,
-      position: "bottom",
+      text1: `${producto.nombre} se ha añadido al carrito`,
     });
   };
 
