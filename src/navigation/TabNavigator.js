@@ -5,7 +5,7 @@ import List from "../screens/ProductList";
 import Cart from "../screens/Cart";
 import Profile from "../screens/Profile";
 import { Ionicons } from "@expo/vector-icons";
-import LoginScreen from "../screens/Login";
+import PedidosScreen from "../screens/Pedidos";
 
 const Tab = createBottomTabNavigator();
 
@@ -53,6 +53,15 @@ const TabNavigator = ({ setUserToken }) => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="cart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Pedidos"
+        component={PedidosScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="clipboard" size={size} color={color} />
           ),
         }}
       />

@@ -61,7 +61,6 @@ const carouselImages = categorias.map((item) => item.imageUrl);
 const Home = () => {
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -9,3 +9,13 @@ export const CrearPedido = async (pedido) => {
     throw error;
   }
 }
+
+export const ObtenerPedidos = async (userId) => {
+  try {
+    const response = await axiosInstance.get(`/app/esb/pedido/cliente/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+}
