@@ -6,8 +6,9 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 
@@ -59,6 +60,8 @@ const carouselImages = categorias.map((item) => item.imageUrl);
 
 const Home = () => {
   const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -90,10 +93,10 @@ const Home = () => {
     <ScrollView style={styles.container}>
       <View style={styles.welcomeSection}>
         <Text style={styles.welcomeText}>¡Bienvenido Enjambre Escucha 🐝!</Text>
-        <Text style={styles.subtitle}>¡Explora los álbumes aquí!</Text>
+        <Text style={styles.subtitle}>¡Compra tus albumes favoritos de la banda aquí!</Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Explora nuestros álbumes</Text>
+      <Text style={styles.sectionTitle}>Explora algunos de nuestros productos</Text>
       <FlatList
         data={categorias}
         renderItem={({ item }) => (
@@ -108,7 +111,24 @@ const Home = () => {
         contentContainerStyle={styles.albumListContainer}
       />
 
-      <Text style={styles.sectionTitle}>Algunos de nuestros productos</Text>
+    <Text style={styles.sectionTitle}>¡Conoce a nuestro equipo!</Text>
+        <FlatList
+          data={products}
+          renderItem={({ item }) => (
+            <View style={styles.productItem}>
+              <Text style={styles.productTitle}>{item.name}</Text>
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={styles.productImage}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.productListContainer}
+        />
+
       <View style={styles.carouselContainer}>
         <TouchableOpacity onPress={goPrevImage} style={styles.carouselButton}>
           <Text style={styles.carouselButtonText}>{"◀"}</Text>
@@ -197,6 +217,26 @@ const styles = StyleSheet.create({
   carouselButtonText: {
     color: "#fff",
     fontSize: 24,
+    fontWeight: "bold",
+  },
+  productItem: {
+    alignItems: "center",
+    marginRight: 15,
+    backgroundColor: "#1e1e1e",
+    borderRadius: 10,
+    padding: 10,
+    width: 160,
+  },
+  productImage: {
+    width: 140,
+    height: 140,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  productTitle: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
     fontWeight: "bold",
   },
 });

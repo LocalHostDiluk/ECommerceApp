@@ -5,19 +5,20 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
-const Profile = () => {
-  const navigation = useNavigation();
+const Profile = ({ navigation, setUserToken }) => {
+  const nav = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({
+    nav.setOptions({
       headerStyle: {
         backgroundColor: "#1e1e1e",
       },
@@ -28,7 +29,7 @@ const Profile = () => {
       },
       headerTitleAlign: "left",
     });
-  }, [navigation]);
+  }, [nav]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -120,6 +121,23 @@ const Profile = () => {
     });
   };
 
+  const handleLogout = async () => {
+    Alert.alert("Cerrar sesión", "¿Estás seguro que deseas cerrar sesión?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Cerrar sesión",
+        onPress: async () => {
+          await AsyncStorage.removeItem("authToken");
+          setUserToken(null); // 👈 esto te lleva automáticamente al Login
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -160,6 +178,10 @@ const Profile = () => {
 
       <TouchableOpacity style={styles.saveButton} onPress={handleChanges}>
         <Text style={styles.saveButtonText}>Guardar cambios</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
       </TouchableOpacity>
     </View>
   );
@@ -217,6 +239,19 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  logoutButton: {
+    backgroundColor: "#ff6600",
+    paddingVertical: 12,
+    width: "100%",
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 15,
+  },
+  logoutButtonText: {
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

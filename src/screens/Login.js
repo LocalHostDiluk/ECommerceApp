@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,13 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { login } from "../api/users";
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
+import { login } from "../api/users";
+import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from "@react-navigation/native";
 
-// ⚠️ Ahora recibe onLoginSuccess como prop desde AuthNavigator
-const LoginScreen = ({ onLoginSuccess }) => {
+const LoginScreen = ({ setUserToken }) => {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
@@ -27,25 +27,74 @@ const LoginScreen = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      Alert.alert(
-        "Campos incompletos",
-        "Por favor, completa todos los campos."
-      );
-      return;
-    }
+  const validateEmail = (username) => {
+    const re = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(username);
+  };
 
+  const handleLogin = async () => {
     setLoading(true);
     try {
-      const token = await login({ phone, username, password });
-      await AsyncStorage.setItem("authToken", token); // Guarda el token
-      onLoginSuccess(token); // Notifica al AuthNavigator que el login fue exitoso
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        "Credenciales incorrectas o problema en el servidor."
+      if (!username || !password) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Por favor, completa todos los campos",
+        });
+        return;
+      }
+
+      if (!validateEmail(username)) {
+        Toast.show({
+          type: "error",
+          text1: "El correo electrónico no es válido.",
+          visibilityTime: 1500,
+          position: "bottom",
+        });
+        return;
+      }
+
+      if (password.length < 6) {
+        Toast.show({
+          type: "error",
+          text1: "La contraseña debe tener al menos 6 caracteres.",
+          visibilityTime: 1500,
+          position: "bottom",
+        });
+        return;
+      }
+
+      const { token, rol, userId } = await login({ username, password }); // 👈 destructuración directa
+      console.log("Token:", token);
+      console.log("Rol:", rol);
+      console.log("ID:", userId);
+
+      // Guardar el token en AsyncStorage
+      await AsyncStorage.setItem("authToken", token);
+      setUserToken(token);
+
+      // Guardar el id en AsyncStorage
+      await AsyncStorage.setItem("userId", userId.toString());
+
+      // Navegar a Home o pantalla principal
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "Inicio" }],
+        })
       );
+
+      Toast.show({
+        type: "success",
+        text1: "Inicio de sesión exitoso",
+      });
+    } catch (error) {
+      console.log("Error en el login:", error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error de inicio de sesión",
+        text2: error.message,
+      });
     } finally {
       setLoading(false);
     }

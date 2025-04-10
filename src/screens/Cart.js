@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { CrearPedido } from "../api/pedidos";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Cart = () => {
   const navigation = useNavigation();
@@ -30,7 +32,7 @@ const Cart = () => {
     });
   }, [navigation]);
 
-  const { cart, removeFromCart } = useContext(CartContext);
+  const { cart, removeFromCart, clearCart } = useContext(CartContext);
 
   const handleRemove = (id) => {
     const itemToRemove = cart.find((item) => item.id === id);
@@ -68,14 +70,65 @@ const Cart = () => {
     </View>
   );
 
-  const alertPurchase = () => {
-    Toast.show({
-      type: "info",
-      text1: "Compra realizada",
-      text2: "Procediendo a la compra",
-      visibilityTime: 2000,
-      position: "bottom",
-    });
+  const alertPurchase = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2:
+            "No se encontró el ID del usuario. Por favor, inicia sesión nuevamente.",
+          visibilityTime: 3000,
+          position: "bottom",
+        });
+        return;
+      }
+
+      const productosParaPedido = cart.map((item) => ({
+        productoId: item.id,
+        cantidad: item.cantidad,
+      }));
+
+      const pedido = {
+        clienteId: parseInt(userId, 10),
+        productos: productosParaPedido,
+      };
+
+      console.log("Pedido a enviar:", pedido);
+
+      CrearPedido(pedido)
+        .then((response) => {
+          console.log("Pedido creado:", response);
+          Toast.show({
+            type: "success",
+            text1: "Compra realizada",
+            text2: "Gracias por tu compra",
+            visibilityTime: 2000,
+            position: "bottom",
+          });
+          clearCart();
+        })
+        .catch((error) => {
+          console.error("Error creando pedido:", error);
+          Toast.show({
+            type: "error",
+            text1: "Error al realizar la compra",
+            text2: error.message,
+            visibilityTime: 2000,
+            position: "bottom",
+          });
+        });
+    } catch (error) {
+      console.error("Error al obtener userId:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Hubo un problema al procesar la compra.",
+        visibilityTime: 2000,
+        position: "bottom",
+      });
+    }
   };
 
   return (

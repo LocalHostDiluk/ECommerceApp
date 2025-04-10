@@ -5,10 +5,11 @@ import List from "../screens/ProductList";
 import Cart from "../screens/Cart";
 import Profile from "../screens/Profile";
 import { Ionicons } from "@expo/vector-icons";
+import LoginScreen from "../screens/Login";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = ({ setUserToken }) => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -57,13 +58,14 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Perfil"
-        component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
         }}
-      />
+      >
+        {(props) => <Profile {...props} setUserToken={setUserToken} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };

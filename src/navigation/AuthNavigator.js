@@ -34,12 +34,18 @@ export default function AuthNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
-          <Stack.Screen name="MainApp" component={TabNavigator} />
+          <Stack.Screen name="Inicio">
+            {(props) => (
+              <TabNavigator
+                {...props}
+                userToken={userToken}
+                setUserToken={setUserToken}
+              />
+            )}
+          </Stack.Screen>
         ) : (
           <Stack.Screen name="Login">
-            {(props) => (
-              <LoginScreen {...props} onLoginSuccess={setUserToken} />
-            )}
+            {(props) => <LoginScreen {...props} setUserToken={setUserToken} />}
           </Stack.Screen>
         )}
       </Stack.Navigator>
