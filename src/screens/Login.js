@@ -64,10 +64,11 @@ const LoginScreen = ({ setUserToken }) => {
         return;
       }
 
-      const { token, rol, userId } = await login({ username, password }); // 👈 destructuración directa
+      const { token, rol, userId, phone } = await login({ username, password }); // 👈 destructuración directa
       console.log("Token:", token);
       console.log("Rol:", rol);
       console.log("ID:", userId);
+      console.log("Teléfono:", phone);
 
       // Guardar el token en AsyncStorage
       await AsyncStorage.setItem("authToken", token);
@@ -75,6 +76,9 @@ const LoginScreen = ({ setUserToken }) => {
 
       // Guardar el id en AsyncStorage
       await AsyncStorage.setItem("userId", userId.toString());
+
+      //Guardar el phone en AsyncStorage
+      await AsyncStorage.setItem("phone", phone.toString());
 
       // Navegar a Home o pantalla principal
       navigation.dispatch(

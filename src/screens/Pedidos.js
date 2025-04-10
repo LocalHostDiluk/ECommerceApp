@@ -56,7 +56,7 @@ const PedidosScreen = () => {
 
   const renderPedidoItem = ({ item }) => (
     <View style={styles.pedidoItem}>
-      <Text style={styles.pedidoId}>Pedido ID: {item.id}</Text>
+      <Text style={styles.pedidoId}>Num. Pedido: {item.id}</Text>
       <Text style={styles.pedidoDate}>Fecha: {item.fecha_creacion}</Text>
       <Text style={styles.pedidoTotal}>Total: ${item.total}</Text>
     </View>

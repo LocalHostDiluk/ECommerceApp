@@ -13,6 +13,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
+import { UserUpdate } from "../api/users";
+import { useEffect } from "react";
 
 const Profile = ({ navigation, setUserToken }) => {
   const nav = useNavigation();
@@ -31,24 +33,21 @@ const Profile = ({ navigation, setUserToken }) => {
     });
   }, [nav]);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [image, setImage] = useState(
-    "https://tiempolibreqro.com/wp-content/uploads/2024/02/Noche-de-SAlon.jpg"
-  );
+  const [image, setImage] = useState("");
+  const [userphonePlaceholder, setUserphonePlaceholder] = useState("");
 
-  const validateEmail = (email) => {
-    const re = /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
-    return re.test(email);
-  };
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const phone = await AsyncStorage.getItem("phone");
+      if (phone) setUserphonePlaceholder(`${phone}`);
+    };
+    fetchUserId();
+  }, []);
 
-  const handleName = (text) => {
-    setName(text);
-  };
-
-  const handleEmail = (text) => {
-    setEmail(text);
+  const handlePassword = (text) => {
+    setPassword(text);
   };
 
   const handlePhone = (text) => {
@@ -82,28 +81,18 @@ const Profile = ({ navigation, setUserToken }) => {
     }
   };
 
-  const handleChanges = () => {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
+  const handleChanges = async () => {
+    if (!password.trim() && !phone.trim()) {
       Toast.show({
         type: "error",
-        text1: "Todos los campos son obligatorios.",
+        text1: "Llena un campo al menos para actualizar.",
         visibilityTime: 1500,
         position: "bottom",
       });
       return;
     }
 
-    if (!validateEmail(email)) {
-      Toast.show({
-        type: "error",
-        text1: "El correo electrónico no es válido.",
-        visibilityTime: 1500,
-        position: "bottom",
-      });
-      return;
-    }
-
-    if (phone.length < 10 || phone.length > 10) {
+    if (phone.trim() && phone.length !== 10) {
       Toast.show({
         type: "error",
         text1: "El teléfono debe tener 10 dígitos.",
@@ -113,12 +102,38 @@ const Profile = ({ navigation, setUserToken }) => {
       return;
     }
 
-    Toast.show({
-      type: "success",
-      text1: "Cambios guardados correctamente.",
-      visibilityTime: 1500,
-      position: "bottom",
-    });
+    if (password.trim() && password.length < 8) {
+      Toast.show({
+        type: "error",
+        text1: "La contraseña debe tener al menos 8 caracteres.",
+        visibilityTime: 1500,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      await UserUpdate(userId, { phone, password });
+
+      Toast.show({
+        type: "success",
+        text1: "Cambios guardados correctamente.",
+        visibilityTime: 1500,
+        position: "bottom",
+      });
+
+      setPassword("");
+      setPhone("");
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error al guardar cambios.",
+        text2: error?.response?.data?.message || "Inténtalo de nuevo.",
+        visibilityTime: 2000,
+        position: "bottom",
+      });
+    }
   };
 
   const handleLogout = async () => {
@@ -147,22 +162,13 @@ const Profile = ({ navigation, setUserToken }) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>Nombre:</Text>
+      <Text style={styles.label}>Password:</Text>
       <TextInput
-        value={name}
-        onChangeText={handleName}
+        value={password}
+        onChangeText={handlePassword}
         style={styles.input}
-        placeholder="Ingrese su nombre"
-        placeholderTextColor="#515a5a"
-      />
-
-      <Text style={styles.label}>Email:</Text>
-      <TextInput
-        value={email}
-        onChangeText={handleEmail}
-        style={styles.input}
-        placeholder="Ingrese su email"
-        keyboardType="email-address"
+        placeholder="Ingrese su Password"
+        keyboardType="default"
         placeholderTextColor="#515a5a"
       />
 
@@ -171,7 +177,7 @@ const Profile = ({ navigation, setUserToken }) => {
         value={phone}
         onChangeText={handlePhone}
         style={styles.input}
-        placeholder="Ingrese su telefono"
+        placeholder= {userphonePlaceholder || "Ingrese su teléfono"}
         keyboardType="phone-pad"
         placeholderTextColor="#515a5a"
       />

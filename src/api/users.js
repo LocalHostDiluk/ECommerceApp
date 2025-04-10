@@ -1,6 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NEXT_PUBLIC_API_URL } from "@env";
+import axiosInstance from "./config";
 
 export const login = async ({ username, password }) => {
   try {
@@ -28,6 +29,27 @@ export const login = async ({ username, password }) => {
     return data; // contiene { token, rol  , id }
   } catch (error) {
     console.error("Error en el login:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const UserUpdate = async (userId, userData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/app/esb/user/update/${userId}`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // <- Aquí devuelves la respuesta
+  } catch (error) {
+    console.error(
+      "Error al actualizar el usuario:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

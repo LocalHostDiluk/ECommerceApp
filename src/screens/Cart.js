@@ -85,9 +85,10 @@ const Cart = () => {
         return;
       }
 
+      // Asegurarse de que cada producto tenga id y cantidad
       const productosParaPedido = cart.map((item) => ({
-        productoId: item.id,
-        cantidad: item.cantidad,
+        productoId: Number(item.id),
+        cantidad: Number(item.cantidad),
       }));
 
       const pedido = {
@@ -95,36 +96,25 @@ const Cart = () => {
         productos: productosParaPedido,
       };
 
-      console.log("Pedido a enviar:", pedido);
+      console.log("Pedido a enviar:", JSON.stringify(pedido, null, 2));
 
-      CrearPedido(pedido)
-        .then((response) => {
-          console.log("Pedido creado:", response);
-          Toast.show({
-            type: "success",
-            text1: "Compra realizada",
-            text2: "Gracias por tu compra",
-            visibilityTime: 2000,
-            position: "bottom",
-          });
-          clearCart();
-        })
-        .catch((error) => {
-          console.error("Error creando pedido:", error);
-          Toast.show({
-            type: "error",
-            text1: "Error al realizar la compra",
-            text2: error.message,
-            visibilityTime: 2000,
-            position: "bottom",
-          });
-        });
+      const response = await CrearPedido(pedido);
+      console.log("Pedido creado:", response);
+
+      Toast.show({
+        type: "success",
+        text1: "Compra realizada",
+        text2: "Gracias por tu compra",
+        visibilityTime: 2000,
+        position: "bottom",
+      });
+      clearCart();
     } catch (error) {
-      console.error("Error al obtener userId:", error);
+      console.error("Error creando pedido:", error);
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Hubo un problema al procesar la compra.",
+        text2: error.message || "Hubo un problema al procesar la compra.",
         visibilityTime: 2000,
         position: "bottom",
       });

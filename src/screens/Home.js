@@ -56,11 +56,17 @@ const categorias = [
   },
 ];
 
-const carouselImages = categorias.map((item) => item.imageUrl);
+const devs = [
+  { imageUrl: require("../../assets/ferch.jpg"), name: "Fetch", id: 1 },
+  { imageUrl: require("../../assets/mike.jpg"), name: "Mike", id: 2 },
+  { imageUrl: require("../../assets/seba.jpg"), name: "Seba", id: 3 },
+  { imageUrl: require("../../assets/diego.jpg"), name: "Diego", id: 4 },
+];
+
+const carouselImages = devs.map((item) => item.imageUrl);
 
 const Home = () => {
   const navigation = useNavigation();
-  const [products, setProducts] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,10 +98,14 @@ const Home = () => {
     <ScrollView style={styles.container}>
       <View style={styles.welcomeSection}>
         <Text style={styles.welcomeText}>¡Bienvenido Enjambre Escucha 🐝!</Text>
-        <Text style={styles.subtitle}>¡Compra tus albumes favoritos de la banda aquí!</Text>
+        <Text style={styles.subtitle}>
+          ¡Compra tus albumes favoritos de la banda aquí!
+        </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Explora algunos de nuestros productos</Text>
+      <Text style={styles.sectionTitle}>
+        Explora algunos de nuestros productos
+      </Text>
       <FlatList
         data={categorias}
         renderItem={({ item }) => (
@@ -110,30 +120,15 @@ const Home = () => {
         contentContainerStyle={styles.albumListContainer}
       />
 
-    <Text style={styles.sectionTitle}>¡Conoce a nuestro equipo!</Text>
-        <FlatList
-          data={products}
-          renderItem={({ item }) => (
-            <View style={styles.productItem}>
-              <Text style={styles.productTitle}>{item.name}</Text>
-              <Image
-                source={{ uri: item.imageUrl }}
-                style={styles.productImage}
-              />
-            </View>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.productListContainer}
-        />
+      <Text style={styles.sectionTitle}>¡Conoce a nuestro equipo!</Text>
 
+      <Text style={styles.productTitle}>{devs[currentImage].name}</Text>
       <View style={styles.carouselContainer}>
         <TouchableOpacity onPress={goPrevImage} style={styles.carouselButton}>
           <Text style={styles.carouselButtonText}>{"◀"}</Text>
         </TouchableOpacity>
         <Image
-          source={{ uri: carouselImages[currentImage] }}
+          source={carouselImages[currentImage]}
           style={styles.carouselImage}
         />
         <TouchableOpacity onPress={goNextImage} style={styles.carouselButton}>
